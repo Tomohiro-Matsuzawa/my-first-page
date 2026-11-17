@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#102a43">
+<title>ロボット省人化効果シミュレーター</title>
+<style>
+:root{--ink:#172b4d;--muted:#62748a;--line:#dce5ee;--bg:#f3f6fa;--blue:#1769aa;--blue2:#e8f2fb;--green:#087f5b;--red:#b54735}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;line-height:1.55}
+header{background:linear-gradient(120deg,#102a43,#1769aa);color:white;padding:28px 20px 34px}header .wrap,main{max-width:1080px;margin:auto}header p{margin:0 0 8px;color:#cfe4f6;font-size:13px;font-weight:700;letter-spacing:.08em}h1{font-size:clamp(24px,4vw,34px);line-height:1.25;margin:0 0 10px}header .sub{margin:0;color:#e4eff8;font-size:14px}
+main{padding:22px 16px 56px}.intro{display:flex;gap:10px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:-4px 0 18px;font-size:13px;color:var(--muted)}.intro strong{color:var(--ink)}
+.layout{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(300px,.92fr);gap:18px;align-items:start}.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 4px 18px #16324f08}.panel h2{font-size:18px;margin:0 0 5px}.hint{font-size:12px;color:var(--muted);margin:0 0 18px}
+.field{margin:0 0 17px}.field label{display:flex;justify-content:space-between;gap:12px;font-size:13px;font-weight:700;margin-bottom:7px}.field label span{color:var(--blue);font-variant-numeric:tabular-nums}.field input[type=number],.field input[type=text]{width:100%;border:1px solid #cbd7e3;border-radius:9px;padding:11px 12px;font:inherit;font-size:16px;color:var(--ink);background:#fff}.field input:focus{outline:3px solid #1769aa22;border-color:var(--blue)}.field input[type=range]{width:100%;accent-color:var(--blue);margin:5px 0}.unit{font-size:11px;color:var(--muted);margin-top:4px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}.presets{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 18px}.presets button,.actions button{border:1px solid #cbd7e3;border-radius:999px;padding:8px 12px;background:white;color:var(--ink);font:inherit;font-size:12px;cursor:pointer}.presets button:hover,.actions button:hover{background:var(--blue2);border-color:var(--blue)}
+.results{position:sticky;top:14px}.hero-result{background:linear-gradient(135deg,#e8f2fb,#f4f9fd);border:1px solid #c8deef;border-radius:13px;padding:17px;margin:14px 0}.hero-result .eyebrow{font-size:12px;color:#42627f;font-weight:700}.hero-result strong{display:block;font-size:clamp(28px,5vw,38px);line-height:1.2;color:#105b91;margin:5px 0}.hero-result small{color:var(--muted);font-size:12px}
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px}.metric{border:1px solid var(--line);border-radius:11px;padding:13px}.metric span{display:block;color:var(--muted);font-size:11px}.metric strong{display:block;font-size:21px;margin-top:4px;font-variant-numeric:tabular-nums}.metric em{font-style:normal;font-size:11px;color:var(--muted)}
+.bar-wrap{margin:18px 0 12px}.bar-head{display:flex;justify-content:space-between;font-size:12px;margin-bottom:7px}.bar{height:11px;background:#edf1f5;border-radius:20px;overflow:hidden}.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#1769aa,#24a18a);border-radius:20px;transition:width .2s}
+.note{font-size:11px;color:var(--muted);line-height:1.7;margin:14px 0 0}.status{padding:10px 12px;border-radius:9px;background:#eef8f4;color:#087f5b;font-size:12px;margin-top:12px}.status.warn{background:#fff4ed;color:var(--red)}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.actions .primary{background:var(--blue);color:white;border-color:var(--blue)}footer{max-width:1080px;margin:0 auto;padding:0 16px 28px;color:var(--muted);font-size:11px}
+@media(max-width:760px){header{padding:23px 17px 28px}.layout{grid-template-columns:1fr}.results{position:static}.panel{padding:17px}.two{gap:9px}.metric strong{font-size:19px}}
+@media print{body{background:white}.layout{display:block}.panel{box-shadow:none;margin-bottom:12px}.results{position:static}.actions,.presets{display:none}header{background:#fff;color:#172b4d;padding:10px 0}header .sub,header p{color:#62748a}main{padding:10px 0}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><p>PLANNING TOOL / ROBOTICS</p><h1>ロボット省人化効果シミュレーター</h1><p class="sub">導入前の作業条件を入力して、人手・コスト・投資回収の目安を企画書に。</p></div></header>
+<main>
+<div class="intro"><span aria-hidden="true">💡</span><div><strong>使い方：</strong>現在の作業量とロボット導入後の自動化率を入力すると、削減できる作業時間・人件費・投資回収期間を自動試算します。数値は企画検討用の概算です。</div></div>
+<div class="layout">
+<section class="panel" aria-labelledby="inputTitle">
+<h2 id="inputTitle">1. 作業条件を入力</h2><p class="hint">まずは近い作業のプリセットを選び、実際の数値に調整してください。</p>
+<div class="presets"><button type="button" data-preset="搬送">搬送作業</button><button type="button" data-preset="検査">目視検査</button><button type="button" data-preset="組立">組立補助</button><button type="button" data-preset="清掃">清掃作業</button></div>
+<div class="field"><label for="task">対象作業名</label><input id="task" type="text" value="部品の搬送作業" maxlength="40"></div>
+<div class="two">
+<div class="field"><label for="people">現在の担当人数 <span>人</span></label><input id="people" type="number" min="0" max="999" step="1" value="2"></div>
+<div class="field"><label for="minutes">1人あたり作業時間 <span>分/日</span></label><input id="minutes" type="number" min="0" max="1440" step="5" value="240"></div>
+</div>
+<div class="two">
+<div class="field"><label for="days">年間稼働日数 <span>日</span></label><input id="days" type="number" min="1" max="366" step="1" value="250"></div>
+<div class="field"><label for="wage">時間あたり人件費 <span>円</span></label><input id="wage" type="number" min="0" max="100000" step="50" value="1800"></div>
+</div>
+<div class="field"><label for="rate">ロボットによる自動化率 <span id="rateLabel">70%</span></label><input id="rate" type="range" min="0" max="100" step="5" value="70"><div class="unit">作業時間のうち、ロボットに置き換えられる割合</div></div>
+<hr style="border:0;border-top:1px solid var(--line);margin:20px 0">
+<h2>2. ロボット導入コスト</h2><p class="hint">見積もり前の場合は仮の金額を入力してください。</p>
+<div class="two">
+<div class="field"><label for="initial">初期導入費用 <span>円</span></label><input id="initial" type="number" min="0" max="1000000000" step="100000" value="5000000"></div>
+<div class="field"><label for="monthly">月額運用・保守費 <span>円</span></label><input id="monthly" type="number" min="0" max="10000000" step="10000" value="50000"></div>
+</div>
+</section>
+<section class="panel results" aria-labelledby="resultTitle">
+<h2 id="resultTitle">3. 省人化効果の試算結果</h2><p class="hint">入力を変更するとリアルタイムで更新されます。</p>
+<div class="hero-result"><div class="eyebrow">年間の人件費削減額（運用費控除後）</div><strong id="annualSaving">---</strong><small>ロボット運用・保守費を差し引いた概算</small></div>
+<div class="metrics">
+<div class="metric"><span>年間削減作業時間</span><strong id="hours">---</strong><em>時間 / 年</em></div>
+<div class="metric"><span>省人化換算</span><strong id="fte">---</strong><em>人分相当（年間2,000時間換算）</em></div>
+<div class="metric"><span>年間の人件費削減額</span><strong id="labor">---</strong><em>運用費控除前</em></div>
+<div class="metric"><span>投資回収期間</span><strong id="payback">---</strong><em>単純回収・年</em></div>
+</div>
+<div class="bar-wrap"><div class="bar-head"><span>作業時間の削減イメージ</span><strong id="barLabel">70%</strong></div><div class="bar"><i id="barFill"></i></div></div>
+<div id="status" class="status" role="status" aria-live="polite">入力値をもとに試算しています。</div>
+<p class="note">※省人化換算は年間削減時間÷2,000時間で算出した参考値であり、実際の人員削減数を保証するものではありません。休憩・段取り・停止時間、導入教育、周辺設備費、税金、減価償却、金利などは含みません。投資回収期間は初期導入費用÷（年間人件費削減額－年間運用費）で算出します。</p>
+<div class="actions"><button type="button" class="primary" id="printBtn">結果を印刷 / PDF保存</button><button type="button" id="csvBtn">試算結果をCSV保存</button><button type="button" id="resetBtn">初期値に戻す</button></div>
+</section>
+</div>
+</main>
+<footer>ロボット導入企画の初期検討用ツール｜入力内容はこのブラウザ内で計算され、外部へ送信されません。</footer>
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const ids=['task','people','minutes','days','wage','rate','initial','monthly'];
+const presets={
+'搬送':{task:'部品の搬送作業',people:2,minutes:240,rate:70},
+'検査':{task:'製品の目視検査',people:3,minutes:300,rate:60},
+'組立':{task:'組立補助作業',people:2,minutes:360,rate:50},
+'清掃':{task:'工場内の清掃作業',people:1,minutes:180,rate:80}
+};
+function n(id){const v=Number($(id).value);return Number.isFinite(v)?Math.max(0,v):0}
+function yen(v){return Math.round(v).toLocaleString('ja-JP')+'円'}
+function calc(){
+const people=n('people'),mins=n('minutes'),days=n('days'),wage=n('wage'),rate=n('rate')/100,initial=n('initial'),monthly=n('monthly');
+const hours=people*mins/60*days*rate;
+const labor=hours*wage, running=monthly*12, net=labor-running;
+const fte=hours/2000, payback=net>0?initial/net:null;
+$('rateLabel').textContent=Math.round(rate*100)+'%';$('barLabel').textContent=Math.round(rate*100)+'%';$('barFill').style.width=(rate*100)+'%';
+$('hours').textContent=hours.toLocaleString('ja-JP',{maximumFractionDigits:1});
+$('fte').textContent=fte.toLocaleString('ja-JP',{minimumFractionDigits:2,maximumFractionDigits:2});
+$('labor').textContent=yen(labor);$('annualSaving').textContent=(net>=0?'':'−')+yen(Math.abs(net));
+$('payback').textContent=payback===null?'回収困難':payback.toLocaleString('ja-JP',{maximumFractionDigits:1})+'年';
+const status=$('status');status.className='status'+(net<=0?' warn':'');
+status.textContent=net<=0?'年間の人件費削減額が運用・保守費を下回っています。自動化率や費用条件を見直してください。':payback===null?'初期導入費用が0円のため、回収期間は算出対象外です。':'年間の運用費を差し引いても効果が見込める試算です。実際の配置転換・要員計画と合わせてご確認ください。';
+window.lastResult={task:$('task').value,people,mins,days,wage,rate:rate*100,initial,monthly,hours,labor,running,net,fte,payback:payback===null?'算出不可':payback};
+}
+ids.forEach(id=>$(id).addEventListener('input',calc));
+document.querySelectorAll('[data-preset]').forEach(btn=>btn.addEventListener('click',()=>{const p=presets[btn.dataset.preset];Object.keys(p).forEach(k=>$(k).value=p[k]);calc()}));
+$('printBtn').addEventListener('click',()=>window.print());
+$('resetBtn').addEventListener('click',()=>{Object.entries({task:'部品の搬送作業',people:2,minutes:240,days:250,wage:1800,rate:70,initial:5000000,monthly:50000}).forEach(([k,v])=>$(k).value=v);calc()});
+$('csvBtn').addEventListener('click',()=>{const r=window.lastResult;const rows=[['項目','試算値'],['対象作業',r.task],['現在の担当人数（人）',r.people],['1人あたり作業時間（分/日）',r.mins],['年間稼働日数（日）',r.days],['時間あたり人件費（円）',r.wage],['自動化率（%）',r.rate],['初期導入費用（円）',r.initial],['月額運用・保守費（円）',r.monthly],['年間削減作業時間（時間）',r.hours],['省人化換算（人分）',r.fte],['年間人件費削減額（円）',r.labor],['年間運用費（円）',r.running],['年間削減額・運用費控除後（円）',r.net],['投資回収期間（年）',r.payback]];
+const csv='\uFEFF'+rows.map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\r\n');
+const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='robot-efficiency-estimate.csv';a.click();URL.revokeObjectURL(url)});
+calc();
+})();
+</script>
+</body>
+</html>
