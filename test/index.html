@@ -35,7 +35,7 @@ main{padding:22px 16px 56px}.intro{display:flex;gap:10px;align-items:flex-start;
 <div class="field"><label for="minutes">1人あたり作業時間 <span>分/日</span></label><input id="minutes" type="number" min="0" max="1440" step="5" value="240"></div>
 </div>
 <div class="two">
-<div class="field"><label for="days">年間稼働日数 <span>日</span></label><input id="days" type="number" min="1" max="366" step="1" value="稼働日数" value="稼働日数" data-default="稼働日数"></div>
+<div class="field"><label for="days">年間稼働日数 <span>日</span></label><input id="days" type="number" min="1" max="366" step="1" value="250"></div>
 <div class="field"><label for="wage">時間あたり人件費 <span>円</span></label><input id="wage" type="number" min="0" max="100000" step="50" value="1800"></div>
 </div>
 <div class="field"><label for="rate">ロボットによる自動化率 <span id="rateLabel">70%</span></label><input id="rate" type="range" min="0" max="100" step="5" value="70"><div class="unit">作業時間のうち、ロボットに置き換えられる割合</div></div>
@@ -67,8 +67,6 @@ main{padding:22px 16px 56px}.intro{display:flex;gap:10px;align-items:flex-start;
 (function(){
 const $=id=>document.getElementById(id);
 const ids=['task','people','minutes','days','wage','rate','initial','monthly'];
-const defaults={task:'部品の搬送作業',people:2,minutes:240,days:稼働日数,wage:1800,rate:70,initial:5000000,monthly:50000};
-defaults.days=稼働日数;
 const presets={
 '搬送':{task:'部品の搬送作業',people:2,minutes:240,rate:70},
 '検査':{task:'製品の目視検査',people:3,minutes:300,rate:60},
